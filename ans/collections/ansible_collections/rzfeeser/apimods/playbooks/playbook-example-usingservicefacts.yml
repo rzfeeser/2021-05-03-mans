@@ -1,0 +1,71 @@
+---
+- name: Understand how to grab running services
+  connection: local   # important when connection is to localhost
+  hosts: localhost    # writing a playbook that will run against any linux hosts
+  gather_facts: yes   # this runs setup.py against remote machines
+
+  vars_files:
+          - vars/precheckvars.yml
+
+  tasks:
+        - name: Populate service facts
+          ansible.builtin.service_facts:
+          become: yes
+
+        - name: Print service facts
+          ansible.builtin.debug:
+            var: ansible_facts.services
+            verbosity: 1  # this would require a -v to activate
+
+        - name: Return just a list of service names (tap into python methods)
+          ansible.builtin.debug:
+            var: ansible_facts.services.keys()   # keys() is a DICT method
+
+        - name: Imagine this task is reactive to learning that nginx is installed
+          ansible.builtin.debug:
+            msg: "NGINX is installed"
+          when: '"nginx" in ansible_facts.services.keys()'
+
+        - name: PRECHECK OP (EXAMPLE OF HOW TO USE THE ABOVE)   # reacting to nginx NOT installed (i.e. FAIL!!)
+          assert:
+            that: '"nginx" in ansible_facts.services.keys()'
+
+        # python3 -m pip install jmespath
+        - name: Display services that are running
+          ansible.builtin.debug:
+            msg: "{{ ansible_facts | json_query('services.* | [?state == `running`].name') }}"
+
+        - name: Create a variable on the fly
+          set_fact:
+            running_services: "{{ ansible_facts | json_query('services.* | [?state == `running`].name') }}"
+
+        - name: debug (without the fully qualified portion)
+          debug:
+            var: running_services
+
+        - name: understanding ansible quotations
+          debug:
+            msg: '{{ ansible_facts }}'
+
+        - name: ansible quotations (double quote)
+          debug:
+            msg: "{{ zach }}"
+
+        - name: ansible quotations (single quote)
+          debug:
+            msg: "{{ zach }}"
+
+        - name: ansible quotations
+          debug:
+            var: zach
+
+        - name: ansible quotations
+          debug:
+            msg: "The value of the variable zach is {{ zach }}"
+
+        # python3 -m pip install jmespath
+        - name: Ensure jmespath installed
+          ansible.builtin.pip:
+            name: jmespath
+            state: present
+          become: yes

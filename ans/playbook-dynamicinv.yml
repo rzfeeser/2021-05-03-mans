@@ -1,0 +1,8 @@
+---
+- name: using dynamic inventory
+  hosts: all
+  gather_facts: false
+
+  tasks:
+          - name: check for connectivity
+            ping:
