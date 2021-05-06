@@ -1,0 +1,27 @@
+---
+- name: Using python in our playbooks
+  hosts: localhost
+  connection: local
+
+  vars:
+          webster: {"sky": "fall", "ground": "grass"}      # dict objects
+          marathon: ["savannah", "ray", "john", "george"]  # list objects
+          kite: "just another string"                      # str objects
+
+  tasks:
+          - name: manipulating a string with python
+            debug:
+                    var: kite.capitalize()
+
+          - name: string with py
+            debug:
+                    msg: "it looks like it starts with 'just'"
+            when: kite.startswith("just")
+
+          - name: list with py
+            debug:
+                    var: marathon.count("ray")
+
+          - name: list with py
+            debug:
+                    msg: "{{ marathon }} +  ['larry']"
