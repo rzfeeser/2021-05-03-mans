@@ -1,0 +1,45 @@
+---
+- name: Add ESXi Host to vCenter
+  hosts: localhost
+  connection: local
+
+  # https://galaxy.ansible.com/community/vmware
+  #
+  vars:
+    vcenter_hostname: vcenter.acmeinc.local
+    vcenter_username: admin
+    vcenter_password: qwerty
+    esxi_hostname: hosttoenroll.acmeinc.local
+    esxi_username: root
+    esxi_password: pass123
+
+  tasks:
+    # this is likely step 0
+    # find OUT what is going on in vmware world
+    - name: Gather cluster info from given datacenter
+      community.vmware.vmware_cluster_info:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter: ha-datacenter
+      register: cluster_info
+
+    - name: Dump out everything we got regarding our cluster
+      debug:
+        var: cluster_info
+
+    - name: Make it a big more consumable
+      debug:
+        var: cluster_info.keys()   # use python to drop out just the keys
+
+    - name: Add ESXi Host to vCenter
+      community.vmware.vmware_host:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter: datacenter_name
+        cluster: cluster_name
+        esxi_hostname: '{{ esxi_hostname }}'
+        esxi_username: '{{ esxi_username }}'
+        esxi_password: '{{ esxi_password }}'
+        state: present
