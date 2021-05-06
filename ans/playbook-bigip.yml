@@ -1,0 +1,15 @@
+# https://docs.ansible.com/ansible/latest/collections/f5networks/f5_modules/
+- name: Connecting to BIGIP
+  connection: local
+  hosts: localhost
+
+  tasks:
+        - name: Create a GTM pool
+          bigip_gtm_pool:
+            name: my_pool
+            type: a
+            # below are creds to access BIGIP (make these vars)
+            provider:
+              user: admin
+              password: secret
+              server: lb.mydomain.com

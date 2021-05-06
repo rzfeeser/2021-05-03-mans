@@ -2,6 +2,7 @@
 - name: Add ESXi Host to vCenter
   hosts: localhost
   connection: local
+  #no_log: True # this would turn off logging for the entire playbook
 
   # https://galaxy.ansible.com/community/vmware
   #
@@ -23,6 +24,7 @@
         password: '{{ vcenter_password }}'
         datacenter: ha-datacenter
       register: cluster_info
+      no_log: True # this would not log this task
 
     - name: Dump out everything we got regarding our cluster
       debug:
